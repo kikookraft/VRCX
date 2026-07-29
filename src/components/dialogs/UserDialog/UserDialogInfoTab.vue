@@ -1,77 +1,91 @@
 <template>
     <template v-if="isFriendOnline(userDialog.friend) || currentUser.id === userDialog.id">
-        <div
-            class="mb-2.5 pb-2.5 border-b border-border"
-            v-if="userDialog.ref.location"
-            style="display: flex; flex-direction: column">
-            <div style="flex: none">
-                <template v-if="isRealInstance(userDialog.$location.tag)">
-                    <InstanceActionBar
-                        class="mb-1"
-                        :location="userDialog.$location.tag"
-                        :shortname="userDialog.$location.shortName"
-                        :currentlocation="lastLocation.location"
-                        :instance="userDialog.instance.ref"
-                        :friendcount="userDialog.instance.friendCount"
-                        :refresh-tooltip="t('dialog.user.info.refresh_instance_info')"
-                        :on-refresh="() => refreshInstancePlayerCount(userDialog.$location.tag)" />
-                </template>
-                <Location
-                    class="text-sm"
-                    :location="userDialog.ref.location"
-                    :traveling="userDialog.ref.travelingToLocation" />
-            </div>
-            <div class="flex flex-wrap items-start" style="flex: 1; margin-top: 8px; max-height: 150px; overflow: auto">
-                <div
-                    v-if="userDialog.$location.userId"
-                    class="box-border flex items-center p-1.5 text-[13px] cursor-pointer w-[167px] hover:rounded-[25px_5px_5px_25px]"
-                    @click="showUserDialog(userDialog.$location.userId)">
-                    <template v-if="userDialog.$location.user">
-                        <div
-                            class="relative inline-block flex-none size-9 mr-2.5"
-                            :class="userStatusClass(userDialog.$location.user)">
-                            <Avatar class="size-9">
-                                <AvatarImage :src="userImage(userDialog.$location.user, true)" class="object-cover" />
-                                <AvatarFallback>
-                                    <User class="size-4 text-muted-foreground" />
-                                </AvatarFallback>
-                            </Avatar>
-                        </div>
-                        <div class="flex-1 overflow-hidden">
-                            <span
-                                class="block truncate font-medium leading-[18px]"
-                                :style="{ color: userDialog.$location.user.$userColour }"
-                                v-text="userDialog.$location.user.displayName"></span>
-                            <span class="block truncate text-xs">{{ t('dialog.user.info.instance_creator') }}</span>
-                        </div>
-                    </template>
-                    <span v-else v-text="userDialog.$location.userId"></span>
+        <div class="flex flex-col gap-2.5 mb-2.5">
+            <div class="rounded-xl bg-muted/40 p-3">
+                <div class="flex items-center justify-between mb-2 pb-2 border-b border-border">
+                    <span
+                        class="text-[10px] font-bold uppercase tracking-wide"
+                        :style="{ color: userDialog.theme.subtextColor }">
+                        {{ t('dialog.user.info.current_instance') }}
+                    </span>
                 </div>
-                <div
-                    v-for="user in userDialog.users"
-                    :key="user.id"
-                    class="box-border flex items-center p-1.5 text-[13px] cursor-pointer w-[167px] hover:rounded-[25px_5px_5px_25px]"
-                    @click="showUserDialog(user.id)">
-                    <div class="relative inline-block flex-none size-9 mr-2.5" :class="userStatusClass(user)">
-                        <Avatar class="size-9">
-                            <AvatarImage :src="userImage(user, true)" class="object-cover" />
-                            <AvatarFallback>
-                                <User class="size-4 text-muted-foreground" />
-                            </AvatarFallback>
-                        </Avatar>
+                <div v-if="userDialog.ref.location" style="display: flex; flex-direction: column">
+                    <div style="flex: none">
+                        <template v-if="isRealInstance(userDialog.$location.tag)">
+                            <InstanceActionBar
+                                class="mb-1"
+                                :location="userDialog.$location.tag"
+                                :shortname="userDialog.$location.shortName"
+                                :currentlocation="lastLocation.location"
+                                :instance="userDialog.instance.ref"
+                                :friendcount="userDialog.instance.friendCount"
+                                :refresh-tooltip="t('dialog.user.info.refresh_instance_info')"
+                                :on-refresh="() => refreshInstancePlayerCount(userDialog.$location.tag)" />
+                        </template>
+                        <Location
+                            class="text-sm"
+                            :location="userDialog.ref.location"
+                            :traveling="userDialog.ref.travelingToLocation" />
                     </div>
-                    <div class="flex-1 overflow-hidden">
-                        <span
-                            class="block truncate font-medium leading-[18px]"
-                            :style="{ color: user.$userColour }"
-                            v-text="user.displayName"></span>
-                        <span v-if="user.location === 'traveling'" class="block truncate text-xs">
-                            <Spinner class="inline-block mr-1" />
-                            <Timer :epoch="user.$travelingToTime" />
-                        </span>
-                        <span v-else class="block truncate text-xs">
-                            <Timer :epoch="user.$location_at" />
-                        </span>
+                    <div
+                        class="flex flex-wrap items-start"
+                        style="flex: 1; margin-top: 8px; max-height: 150px; overflow: auto">
+                        <div
+                            v-if="userDialog.$location.userId"
+                            class="box-border flex items-center p-1.5 text-[13px] cursor-pointer w-[167px] hover:rounded-[25px_5px_5px_25px]"
+                            @click="showUserDialog(userDialog.$location.userId)">
+                            <template v-if="userDialog.$location.user">
+                                <div
+                                    class="relative inline-block flex-none size-9 mr-2.5"
+                                    :class="userStatusClass(userDialog.$location.user)">
+                                    <Avatar class="size-9">
+                                        <AvatarImage
+                                            :src="userImage(userDialog.$location.user, true)"
+                                            class="object-cover" />
+                                        <AvatarFallback>
+                                            <User class="size-4 text-muted-foreground" />
+                                        </AvatarFallback>
+                                    </Avatar>
+                                </div>
+                                <div class="flex-1 overflow-hidden">
+                                    <span
+                                        class="block truncate font-medium leading-[18px]"
+                                        :style="{ color: userDialog.$location.user.$userColour }"
+                                        v-text="userDialog.$location.user.displayName"></span>
+                                    <span class="block truncate text-xs">{{
+                                        t('dialog.user.info.instance_creator')
+                                    }}</span>
+                                </div>
+                            </template>
+                            <span v-else v-text="userDialog.$location.userId"></span>
+                        </div>
+                        <div
+                            v-for="user in userDialog.users"
+                            :key="user.id"
+                            class="box-border flex items-center p-1.5 text-[13px] cursor-pointer w-[167px] hover:rounded-[25px_5px_5px_25px]"
+                            @click="showUserDialog(user.id)">
+                            <div class="relative inline-block flex-none size-9 mr-2.5" :class="userStatusClass(user)">
+                                <Avatar class="size-9">
+                                    <AvatarImage :src="userImage(user, true)" class="object-cover" />
+                                    <AvatarFallback>
+                                        <User class="size-4 text-muted-foreground" />
+                                    </AvatarFallback>
+                                </Avatar>
+                            </div>
+                            <div class="flex-1 overflow-hidden">
+                                <span
+                                    class="block truncate font-medium leading-[18px]"
+                                    :style="{ color: user.$userColour }"
+                                    v-text="user.displayName"></span>
+                                <span v-if="user.location === 'traveling'" class="block truncate text-xs">
+                                    <Spinner class="inline-block mr-1" />
+                                    <Timer :epoch="user.$travelingToTime" />
+                                </span>
+                                <span v-else class="block truncate text-xs">
+                                    <Timer :epoch="user.$location_at" />
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -175,68 +189,28 @@
 
             <div class="flex flex-col gap-2.5">
                 <div class="rounded-xl bg-muted/40 p-3">
-                    <div
-                        class="text-[10px] font-bold uppercase tracking-wide mb-2 pb-2 border-b border-border"
-                        :style="{ color: userDialog.theme.subtextColor }">
-                        {{ t('dialog.user.info.vrcx_info') }}
-                        <span class="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                            <TooltipWrapper
-                                v-if="userDialog.ref.profilePicOverride && !userDialog.ref.currentAvatarImageUrl"
-                                side="top"
-                                :content="t('dialog.user.info.vrcx_info_tooltip')">
-                                <Info
-                                    class="inline-block h-3 w-3 align-middle"
-                                    :style="{ color: userDialog.theme.iconColor }" />
-                            </TooltipWrapper>
+                    <div class="flex items-center justify-between mb-2 pb-2 border-b border-border">
+                        <span
+                            class="text-[10px] font-bold uppercase tracking-wide"
+                            :style="{ color: userDialog.theme.subtextColor }">
+                            {{ t('dialog.user.info.vrcx_info') }}
+                            <span class="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                                <TooltipWrapper
+                                    v-if="userDialog.ref.profilePicOverride && !userDialog.ref.currentAvatarImageUrl"
+                                    side="top"
+                                    :content="t('dialog.user.info.vrcx_info_tooltip')">
+                                    <Info
+                                        class="inline-block h-3 w-3 align-middle"
+                                        :style="{ color: userDialog.theme.iconColor }" />
+                                </TooltipWrapper>
+                            </span>
                         </span>
                     </div>
                     <div class="flex flex-col gap-1.5">
-                        <template v-if="currentUser.id !== userDialog.id">
-                            <div class="flex justify-between items-start gap-2 text-xs">
-                                <span class="text-muted-foreground shrink-0">{{
-                                    t('dialog.user.info.last_seen')
-                                }}</span>
-                                <span class="text-right text-muted-foreground">{{
-                                    formatDateFilter(userDialog.lastSeen, 'long')
-                                }}</span>
-                            </div>
-                            <TooltipWrapper side="top" :content="t('dialog.user.info.open_previous_instance')">
-                                <div
-                                    class="flex justify-between items-start gap-2 text-xs cursor-pointer hover:text-foreground"
-                                    @click="showPreviousInstancesListDialog(userDialog.ref)">
-                                    <span class="text-muted-foreground shrink-0">{{
-                                        t('dialog.user.info.join_count')
-                                    }}</span>
-                                    <span class="text-right text-muted-foreground">{{
-                                        userDialog.joinCount || '—'
-                                    }}</span>
-                                </div>
-                            </TooltipWrapper>
-                            <div class="flex justify-between items-start gap-2 text-xs">
-                                <span class="text-muted-foreground shrink-0">{{
-                                    t('dialog.user.info.time_together')
-                                }}</span>
-                                <span class="text-right text-muted-foreground">{{
-                                    userDialog.timeSpent ? timeToText(userDialog.timeSpent) : '—'
-                                }}</span>
-                            </div>
-                        </template>
-                        <template v-else>
-                            <TooltipWrapper side="top" :content="t('dialog.user.info.open_previous_instance')">
-                                <div
-                                    class="flex justify-between items-start gap-2 text-xs cursor-pointer hover:text-foreground"
-                                    @click="showPreviousInstancesListDialog(userDialog.ref)">
-                                    <span class="text-muted-foreground shrink-0">{{
-                                        t('dialog.user.info.play_time')
-                                    }}</span>
-                                    <span class="text-right text-muted-foreground">{{
-                                        userDialog.timeSpent ? timeToText(userDialog.timeSpent) : '—'
-                                    }}</span>
-                                </div>
-                            </TooltipWrapper>
-                        </template>
-
-                        <TooltipWrapper :side="currentUser.id !== userDialog.id ? 'bottom' : 'top'">
+                        <TooltipWrapper
+                            :side="currentUser.id !== userDialog.id ? 'bottom' : 'top'"
+                            :content="formatDateFilter(userOnlineForTimestamp(userDialog), 'long')"
+                            :disabled="!userOnlineForTimestamp(userDialog)">
                             <template #content>
                                 <span>{{ formatDateFilter(userOnlineForTimestamp(userDialog), 'short') }}</span>
                             </template>
@@ -249,17 +223,35 @@
                                     }}
                                 </span>
                                 <span class="text-right text-muted-foreground">{{
-                                    userOnlineFor(userDialog.ref)
+                                    timeAgo(userOnlineForTimestamp(userDialog))
                                 }}</span>
                             </div>
                         </TooltipWrapper>
 
                         <template v-if="currentUser.id !== userDialog.id">
-                            <TooltipWrapper side="top" :disabled="userDialog.dateFriendedInfo.length < 2">
+                            <TooltipWrapper
+                                side="top"
+                                :disabled="!userDialog.lastSeen"
+                                :content="formatDateFilter(userDialog.lastSeen, 'long')">
+                                <div class="flex justify-between items-start gap-2 text-xs">
+                                    <span class="text-muted-foreground shrink-0">{{
+                                        t('dialog.user.info.last_seen')
+                                    }}</span>
+                                    <span class="text-right text-muted-foreground">{{
+                                        timeAgo(userDialog.lastSeen)
+                                    }}</span>
+                                </div>
+                            </TooltipWrapper>
+                            <TooltipWrapper side="top" :disabled="userDialog.dateFriendedInfo.length === 0">
                                 <template #content>
-                                    <template v-for="ref in userDialog.dateFriendedInfo" :key="ref.type">
-                                        <span>{{ ref.type }}: {{ formatDateFilter(ref.created_at, 'long') }}</span
-                                        ><br />
+                                    <template v-if="userDialog.dateFriendedInfo.length === 1">
+                                        {{ formatDateFilter(userDialog.dateFriended, 'long') }}
+                                    </template>
+                                    <template v-else>
+                                        <template v-for="ref in userDialog.dateFriendedInfo" :key="ref.type">
+                                            <span>{{ ref.type }}: {{ formatDateFilter(ref.created_at, 'long') }}</span
+                                            ><br />
+                                        </template>
                                     </template>
                                 </template>
                                 <div class="flex justify-between items-start gap-2 text-xs">
@@ -271,7 +263,46 @@
                                         }}
                                     </span>
                                     <span class="text-right text-muted-foreground">{{
-                                        formatDateFilter(userDialog.dateFriended, 'long')
+                                        timeAgo(userDialog.dateFriended)
+                                    }}</span>
+                                </div>
+                            </TooltipWrapper>
+                            <TooltipWrapper
+                                side="top"
+                                :content="timeToText(userDialog.timeSpent)"
+                                :disabled="!userDialog.timeSpent">
+                                <div class="flex justify-between items-start gap-2 text-xs">
+                                    <span class="text-muted-foreground shrink-0">{{
+                                        t('dialog.user.info.time_together')
+                                    }}</span>
+                                    <span class="text-right text-muted-foreground">{{
+                                        timeAgo(Date.now() - userDialog.timeSpent * 1000)
+                                    }}</span>
+                                </div>
+                            </TooltipWrapper>
+                            <TooltipWrapper side="top" :content="t('dialog.user.info.open_previous_instance')">
+                                <div
+                                    class="flex justify-between items-start gap-2 text-xs cursor-pointer hover:text-foreground"
+                                    @click="showPreviousInstancesListDialog(userDialog.ref)">
+                                    <span class="text-muted-foreground shrink-0">{{
+                                        t('dialog.user.info.join_count')
+                                    }}</span>
+                                    <span class="text-right text-muted-foreground">{{
+                                        userDialog.joinCount || '—'
+                                    }}</span>
+                                </div>
+                            </TooltipWrapper>
+                        </template>
+                        <template v-else>
+                            <TooltipWrapper side="top" :content="t('dialog.user.info.open_previous_instance')">
+                                <div
+                                    class="flex justify-between items-start gap-2 text-xs cursor-pointer hover:text-foreground"
+                                    @click="showPreviousInstancesListDialog(userDialog.ref)">
+                                    <span class="text-muted-foreground shrink-0">{{
+                                        t('dialog.user.info.play_time')
+                                    }}</span>
+                                    <span class="text-right text-muted-foreground">{{
+                                        timeAgo(Date.now() - userDialog.timeSpent * 1000)
                                     }}</span>
                                 </div>
                             </TooltipWrapper>
@@ -303,18 +334,16 @@
                                     t('dialog.user.info.last_activity')
                                 }}</span>
                                 <span class="text-right text-muted-foreground">
-                                    {{
-                                        userDialog.ref.last_activity
-                                            ? timeToText(Date.now() - Date.parse(userDialog.ref.last_activity))
-                                            : '—'
-                                    }}
+                                    {{ timeAgo(userDialog.ref.last_activity) }}
                                 </span>
                             </div>
                         </TooltipWrapper>
 
                         <div class="flex justify-between items-start gap-2 text-xs">
                             <span class="text-muted-foreground shrink-0">{{ t('dialog.user.info.date_joined') }}</span>
-                            <span class="text-right text-muted-foreground" v-text="userDialog.ref.date_joined"></span>
+                            <span
+                                class="text-right text-muted-foreground"
+                                v-text="formatDateFilter(userDialog.ref.date_joined, 'date')"></span>
                         </div>
 
                         <template v-if="currentUser.id === userDialog.id">
@@ -390,8 +419,8 @@
         isRealInstance,
         openExternalLink,
         timeToText,
-        userOnlineFor,
-        userOnlineForTimestamp
+        userOnlineForTimestamp,
+        timeAgo
     } from '../../../shared/utils';
     import { useUserDisplay } from '../../../composables/useUserDisplay';
     import { refreshInstancePlayerCount } from '../../../coordinators/instanceCoordinator';
