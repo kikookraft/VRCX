@@ -1,5 +1,5 @@
 <template>
-    <div class="rounded-xl bg-muted/80 overflow-hidden flex flex-col">
+    <div class="rounded-xl bg-(--profile-card)/80 overflow-hidden flex flex-col">
         <div class="relative aspect-17/6">
             <div
                 v-if="
@@ -67,6 +67,12 @@
                             class="font-bold cursor-pointer wrap-anywhere"
                             v-text="userDialog.ref.displayName"
                             @click="copyUserDisplayName(userDialog.ref.displayName)"></span>
+                        <TooltipWrapper
+                            v-if="userDialog.publicProfileRef?.isEconomyCreator"
+                            side="top"
+                            :content="t('dialog.user.info.economy_creator')">
+                            <BadgeCheck class="h-3.5 w-3.5 text-[#3b82f6]" />
+                        </TooltipWrapper>
                         <TooltipWrapper v-if="userDialog.ref.pronouns" side="top" :content="t('dialog.user.pronouns')">
                             <span class="x-grey font-mono text-xs" v-text="userDialog.ref.pronouns"></span>
                         </TooltipWrapper>
@@ -179,18 +185,21 @@
                     {{ t('dialog.user.tags.vrchat_team') }}
                 </Badge>
                 <TooltipWrapper v-if="userDialog.ref.$platform === 'standalonewindows'" side="top" content="PC">
-                    <Badge variant="outline" class="h-5 w-5 p-0 text-platform-pc border-platform-pc!">
+                    <Badge variant="outline" class="h-5 px-1.5 text-[11px] text-platform-pc border-platform-pc!">
                         <Monitor class="h-3 w-3 text-platform-pc" />
+                        PC
                     </Badge>
                 </TooltipWrapper>
                 <TooltipWrapper v-else-if="userDialog.ref.$platform === 'android'" side="top" content="Android">
-                    <Badge variant="outline" class="h-5 w-5 p-0 text-platform-quest border-platform-quest!">
+                    <Badge variant="outline" class="h-5 px-1.5 text-[11px] text-platform-quest border-platform-quest!">
                         <Smartphone class="h-3 w-3 text-platform-quest" />
+                        Android
                     </Badge>
                 </TooltipWrapper>
                 <TooltipWrapper v-else-if="userDialog.ref.$platform === 'ios'" side="top" content="iOS">
-                    <Badge variant="outline" class="h-5 w-5 p-0 text-platform-ios border-platform-ios">
+                    <Badge variant="outline" class="h-5 px-1.5 text-[11px] text-platform-ios border-platform-ios">
                         <Apple class="h-3 w-3 text-platform-ios" />
+                        iOS
                     </Badge>
                 </TooltipWrapper>
                 <Badge
@@ -216,7 +225,7 @@
                     v-for="item in userDialog.ref.$languages"
                     :key="item.key"
                     variant="outline"
-                    class="h-5 px-1.5 inline-flex items-center gap-1 text-[11px] leading-none">
+                    class="h-5 px-1.5 inline-flex items-center gap-1 text-[11px] leading-none border-muted-foreground/30">
                     <span class="flags inline-block shrink-0 self-center" :class="languageClass(item.key)"></span>
                     <span class="inline-flex items-center leading-none">{{ item.value }} ({{ item.key }})</span>
                 </Badge>
@@ -282,7 +291,9 @@
                 </TooltipWrapper>
             </div>
 
-            <div v-if="currentUser.id === userDialog.id" class="border-t border-border flex flex-col gap-1.5">
+            <div
+                v-if="currentUser.id === userDialog.id"
+                class="border-t border-muted-foreground/20 flex flex-col gap-1.5">
                 <div
                     class="flex justify-between items-center text-xs cursor-pointer hover:text-foreground mt-1.5"
                     @click="toggleAvatarCopying">
@@ -327,9 +338,9 @@
         </div>
     </div>
 
-    <div class="rounded-xl bg-muted/80 p-3 flex flex-col mt-2">
+    <div class="rounded-xl bg-(--profile-card)/80 p-3 flex flex-col mt-2">
         <div
-            class="text-[10px] font-bold uppercase tracking-wide mb-2 pb-2 border-b border-border"
+            class="text-[10px] font-bold uppercase tracking-wide mb-2 pb-2 border-b border-muted-foreground/20"
             :style="{ color: userDialog.theme.subtextColor }">
             {{
                 userDialog.id !== currentUser.id &&
@@ -367,9 +378,9 @@
         </div>
     </div>
 
-    <div class="rounded-xl bg-muted/80 p-3 flex flex-col mt-2">
+    <div class="rounded-xl bg-(--profile-card)/80 p-3 flex flex-col mt-2">
         <div
-            class="text-[10px] font-bold uppercase tracking-wide mb-2 pb-2 border-b border-border"
+            class="text-[10px] font-bold uppercase tracking-wide mb-2 pb-2 border-b border-muted-foreground/20"
             :style="{ color: userDialog.theme.subtextColor }">
             {{ t('dialog.user.info.represented_group') }}
         </div>
@@ -418,6 +429,7 @@
 <script setup>
     import {
         Apple,
+        BadgeCheck,
         ChevronDown,
         IdCard,
         Image,

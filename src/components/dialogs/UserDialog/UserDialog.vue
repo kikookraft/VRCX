@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-1 min-h-0 min-w-0 flex flex-row">
+    <div class="user-dialog-scrollbars flex-1 min-h-0 min-w-0 flex flex-row">
         <DialogHeader class="sr-only">
             <DialogTitle>{{
                 userDialog.ref?.displayName || userDialog.id || t('dialog.user.info.header')
@@ -55,7 +55,7 @@
 
                 <template #JSON>
                     <DialogJsonTab
-                        class="rounded-xl bg-muted/80 p-2"
+                        class="rounded-xl bg-(--profile-card)/80 p-2"
                         :tree-data="treeData"
                         :tree-data-key="treeData?.id"
                         :dialog-id="userDialog.id"
@@ -422,3 +422,14 @@
         clearInviteImageUpload();
     }
 </script>
+
+<style scoped>
+    .user-dialog-scrollbars {
+        --user-dialog-scrollbar-thumb: color-mix(in oklab, var(--foreground) 30%, transparent);
+        --user-dialog-scrollbar-track: transparent;
+    }
+
+    .user-dialog-scrollbars :deep(*) {
+        scrollbar-color: var(--user-dialog-scrollbar-thumb) var(--user-dialog-scrollbar-track);
+    }
+</style>

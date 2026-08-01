@@ -1,8 +1,8 @@
 <template>
     <template v-if="isFriendOnline(userDialog.friend) || currentUser.id === userDialog.id">
         <div class="flex flex-col gap-2.5 mb-2.5">
-            <div class="rounded-xl bg-muted/80 p-3">
-                <div class="flex items-center justify-between mb-2 border-b border-background-muted">
+            <div class="rounded-xl bg-(--profile-card)/80 p-3">
+                <div class="flex items-center justify-between mb-2 pb-1 border-b border-muted-foreground/20">
                     <span
                         class="text-[10px] font-bold uppercase tracking-wide"
                         :style="{ color: userDialog.theme.subtextColor }">
@@ -12,6 +12,7 @@
                         <InstanceActionBar
                             class="mb-1"
                             :showButtons="true"
+                            :buttonStyle="{ color: userDialog.theme.iconColor }"
                             :showInstanceInfo="false"
                             :location="userDialog.$location.tag"
                             :shortname="userDialog.$location.shortName"
@@ -29,20 +30,20 @@
                     <span class="text-sm text-muted-foreground">{{ t('location.private') }}</span>
                 </div>
                 <div class="flex flex-col">
-                    <div v-if="isRealInstance(userDialog.$location.tag)" class="flex justify-between">
+                    <div v-if="isRealInstance(userDialog.$location.tag)" class="flex gap-1.5 justify-between">
                         <div class="flex flex-col justify-between">
                             <span
                                 class="text-md text-foreground cursor-pointer"
                                 @click="showWorldDialog(userDialog.$location.tag)"
                                 >{{ userDialog.instance?.ref?.world?.name }}</span
                             >
-                            <div class="flex gap-1.5">
+                            <div class="flex flex-wrap gap-1.5 whitespace-nowrap overflow-hidden text-ellipsis">
                                 <LocationWorld
-                                    class="text-sm inline-flex w-fit max-w-full"
+                                    class="text-sm inline-flex w-fit max-w-full border-muted-foreground/30"
                                     :locationobject="userDialog.$location"
                                     :currentuserid="currentUser.id" />
                                 <InstanceActionBar
-                                    class="text-sm inline-flex w-fit max-w-full"
+                                    class="text-sm inline-flex w-fit max-w-full border-muted-foreground/30"
                                     :showButtons="false"
                                     :showInstanceInfo="true"
                                     :location="userDialog.$location.tag"
@@ -130,8 +131,8 @@
     <div class="@container">
         <div class="grid gap-2.5 grid-cols-1 @[560px]:grid-cols-[minmax(0,1fr)_230px]" style="align-items: start">
             <div class="flex flex-col gap-2.5">
-                <div class="rounded-xl bg-muted/80 p-3">
-                    <div class="flex items-center justify-between mb-2 pb-2 border-b border-border">
+                <div class="rounded-xl bg-(--profile-card)/80 p-3">
+                    <div class="flex items-center justify-between mb-2 pb-2 border-b border-muted-foreground/20">
                         <span
                             class="text-[10px] font-bold uppercase tracking-wide"
                             :style="{ color: userDialog.theme.subtextColor }">
@@ -179,9 +180,9 @@
 
                 <div
                     v-if="!hideUserNotes"
-                    class="rounded-xl bg-muted/80 p-3 cursor-pointer"
+                    class="rounded-xl bg-(--profile-card)/80 p-3 cursor-pointer"
                     @click="isEditNoteAndMemoDialogVisible = true">
-                    <div class="flex items-center justify-between mb-2 pb-2 border-b border-border">
+                    <div class="flex items-center justify-between mb-2 pb-2 border-b border-muted-foreground/20">
                         <span
                             class="text-[10px] font-bold uppercase tracking-wide"
                             :style="{ color: userDialog.theme.subtextColor }">
@@ -201,9 +202,9 @@
 
                 <div
                     v-if="!hideUserMemos"
-                    class="rounded-xl bg-muted/80 p-3 cursor-pointer"
+                    class="rounded-xl bg-(--profile-card)/80 p-3 cursor-pointer"
                     @click="isEditNoteAndMemoDialogVisible = true">
-                    <div class="flex items-center justify-between mb-2 pb-2 border-b border-border">
+                    <div class="flex items-center justify-between mb-2 pb-2 border-b border-muted-foreground/20">
                         <span
                             class="text-[10px] font-bold uppercase tracking-wide"
                             :style="{ color: userDialog.theme.subtextColor }">
@@ -223,17 +224,14 @@
             </div>
 
             <div class="flex flex-col gap-2.5">
-                <div class="rounded-xl bg-muted/80 p-3">
-                    <div class="flex items-center justify-between mb-2 pb-2 border-b border-border">
+                <div class="rounded-xl bg-(--profile-card)/80 p-3">
+                    <div class="flex items-center justify-between mb-2 pb-2 border-b border-muted-foreground/20">
                         <span
                             class="text-[10px] font-bold uppercase tracking-wide"
                             :style="{ color: userDialog.theme.subtextColor }">
                             {{ t('dialog.user.info.vrcx_info') }}
                             <span class="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                                <TooltipWrapper
-                                    v-if="userDialog.ref.profilePicOverride && !userDialog.ref.currentAvatarImageUrl"
-                                    side="top"
-                                    :content="t('dialog.user.info.vrcx_info_tooltip')">
+                                <TooltipWrapper side="top" :content="t('dialog.user.info.vrcx_info_tooltip')">
                                     <Info
                                         class="inline-block h-3 w-3 align-middle"
                                         :style="{ color: userDialog.theme.iconColor }" />
@@ -345,9 +343,9 @@
                     </div>
                 </div>
 
-                <div class="rounded-xl bg-muted/80 p-3">
+                <div class="rounded-xl bg-(--profile-card)/80 p-3">
                     <div
-                        class="text-[10px] font-bold uppercase tracking-wide mb-2 pb-2 border-b border-border"
+                        class="text-[10px] font-bold uppercase tracking-wide mb-2 pb-2 border-b border-muted-foreground/20"
                         :style="{ color: userDialog.theme.subtextColor }">
                         {{ t('dialog.user.info.header') }}
                     </div>
@@ -412,9 +410,9 @@
 
                 <div
                     v-if="userDialog.ref.id === currentUser.id && currentUser.homeLocation"
-                    class="rounded-xl bg-muted/80 p-3">
+                    class="rounded-xl bg-(--profile-card)/80 p-3">
                     <div
-                        class="text-[10px] font-bold uppercase tracking-wide mb-2 pb-2 border-b border-border"
+                        class="text-[10px] font-bold uppercase tracking-wide mb-2 pb-2 border-b border-muted-foreground/20"
                         :style="{ color: userDialog.theme.subtextColor }">
                         {{ t('dialog.user.info.home_location') }}
                     </div>
