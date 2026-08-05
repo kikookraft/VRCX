@@ -7,7 +7,7 @@
             <DialogDescription>{{ getUserStateText(userDialog.ref || {}) }}</DialogDescription>
         </DialogHeader>
 
-        <div class="flex-none w-80 overflow-y-auto">
+        <div class="flex-none w-77 overflow-y-auto">
             <UserSummaryHeader
                 :get-user-state-text="getUserStateText"
                 :copy-user-display-name="copyUserDisplayName"
@@ -20,7 +20,7 @@
             <TabsUnderline
                 v-model="userDialog.activeTab"
                 :items="userDialogTabs"
-                :tab-color="userDialogTabColor"
+                :activeColor="userDialogTabColor"
                 :unmount-on-hide="false"
                 fill
                 :background="true"
@@ -55,7 +55,7 @@
 
                 <template #JSON>
                     <DialogJsonTab
-                        class="rounded-xl bg-(--profile-card)/80 p-2"
+                        class="rounded-xl bg-(--profile-card) p-2"
                         :tree-data="treeData"
                         :tree-data-key="treeData?.id"
                         :dialog-id="userDialog.id"
@@ -166,6 +166,12 @@
             return 'var(--primary)';
         }
         return color;
+    });
+    const scrollbarThumbColor = computed(() => {
+        const color = userDialog.value.theme?.buttonColor;
+        return color === 'var(--primary)'
+            ? 'color-mix(in oklab, var(--foreground) 30%, transparent)'
+            : `color-mix(in oklab, ${color} 50%, transparent)`;
     });
     const { cachedUsers, showSendBoopDialog, showEditProfileDialog } = useUserStore();
     const { showFavoriteDialog } = useFavoriteStore();
@@ -278,12 +284,16 @@
         const D = userDialog.value;
         if (D.id === currentUser.value.id) {
             treeData.value = formatJsonVars({
-                ...currentUser.value,
-                ...D.ref
+                currentUser: currentUser.value,
+                user: D.ref,
+                profile: D.publicProfileRef
             });
             return;
         }
-        treeData.value = formatJsonVars(D.ref);
+        treeData.value = formatJsonVars({
+            user: D.ref,
+            profile: D.publicProfileRef
+        });
     }
 
     /**
@@ -425,7 +435,7 @@
 
 <style scoped>
     .user-dialog-scrollbars {
-        --user-dialog-scrollbar-thumb: color-mix(in oklab, var(--foreground) 30%, transparent);
+        --user-dialog-scrollbar-thumb: v-bind(scrollbarThumbColor);
         --user-dialog-scrollbar-track: transparent;
     }
 

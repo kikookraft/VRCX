@@ -11,7 +11,7 @@
             @click="getUserFavoriteWorlds(userDialog.id)">
         </Button> -->
     <template v-if="userDialog.userFavoriteWorlds && userDialog.userFavoriteWorlds.length > 0">
-        <div class="flex h-full min-h-0 flex-col overflow-hidden p-2 rounded-xl bg-(--profile-card)/80">
+        <div class="flex h-full min-h-0 flex-col overflow-hidden p-2 rounded-xl bg-(--profile-card)">
             <div class="pb-2">
                 <Input v-model="searchQuery" class="h-8 w-40 shrink-0" placeholder="Search worlds" @click.stop />
             </div>
@@ -45,7 +45,7 @@
                 v-else
                 v-model="favoriteWorldsTab"
                 :items="favoriteWorldTabs"
-                :tab-color="userDialogTabColor"
+                :activeColor="userDialogTabColor"
                 :unmount-on-hide="false"
                 variant="equal"
                 fill
@@ -97,7 +97,7 @@
         </div>
     </template>
     <template v-else-if="!userDialog.isFavoriteWorldsLoading">
-        <div style="display: flex; justify-content: center; align-items: center; height: 100%">
+        <div class="flex justify-center items-center h-full p-2 rounded-xl bg-(--profile-card)">
             <DataTableEmpty type="nodata" />
         </div>
     </template>
