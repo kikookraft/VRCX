@@ -42,6 +42,9 @@
                                                         <User class="size-5 text-muted-foreground" />
                                                     </AvatarFallback>
                                                 </Avatar>
+                                                <IconFrame
+                                                    :enabled="sidebarCosmetics"
+                                                    :icon-frame="currentUser.iconFrame" />
                                             </div>
                                             <div class="flex-1 overflow-hidden h-9 flex flex-col justify-between">
                                                 <span
@@ -227,6 +230,7 @@
         ContextMenuTrigger
     } from '../../../components/ui/context-menu';
     import { Avatar, AvatarFallback, AvatarImage } from '../../../components/ui/avatar';
+    import IconFrame from '../../../components/IconFrame.vue';
     import {
         useAdvancedSettingsStore,
         useAppearanceSettingsStore,
@@ -275,7 +279,8 @@
         isSidebarDivideByFriendGroup,
         sidebarFavoriteGroups,
         sidebarFavoriteGroupOrder,
-        sidebarSortMethods
+        sidebarSortMethods,
+        sidebarCosmetics
     } = storeToRefs(appearanceSettingsStore);
     const { gameLogDisabled } = storeToRefs(useAdvancedSettingsStore());
     const userStore = useUserStore();

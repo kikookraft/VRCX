@@ -6,8 +6,8 @@
                 {{ t('dialog.world.instances.header') }}
             </div>
         </div>
-        <div v-for="room in groupDialog.instances" :key="room.tag" class="flex flex-col gap-2">
-            <div class="flex items-center gap-2">
+        <div v-for="room in groupDialog.instances" :key="room.tag" class="flex flex-col gap-2 mb-4">
+            <div class="flex flex-wrap gap-2 whitespace-nowrap overflow-hidden text-ellipsis">
                 <Location :location="room.tag" class="text-sm text-muted-foreground rounded-full border py-0.5 px-2" />
                 <InstanceActionBar
                     class="text-sm"
@@ -31,6 +31,7 @@
                                 <User class="size-4 text-muted-foreground" />
                             </AvatarFallback>
                         </Avatar>
+                        <IconFrame :icon-frame="user.iconFrame" />
                     </div>
                     <div class="flex-1 overflow-hidden">
                         <span
@@ -215,6 +216,7 @@
 <script setup>
     import { Eye, Image, Pencil, Trash2, User } from 'lucide-vue-next';
     import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+    import IconFrame from '@/components/IconFrame.vue';
     import { Button } from '@/components/ui/button';
     import { Spinner } from '@/components/ui/spinner';
     import { ref, watch } from 'vue';
