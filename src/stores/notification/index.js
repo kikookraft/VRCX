@@ -201,14 +201,20 @@ export const useNotificationStore = defineStore('Notification', () => {
             }
         }
         if (ref.senderUserId !== userStore.currentUser.id) {
-            if (
-                ref.type !== 'friendRequest' &&
-                ref.type !== 'ignoredFriendRequest' &&
-                !ref.type.includes('.')
-            ) {
+            const isExcludedType =
+                ref.type === 'friendRequest' ||
+                ref.type === 'ignoredFriendRequest' ||
+                ref.type.includes('.');
+            const isNotificationInitReady =
+                !notificationInitStatus.value || !isNotificationsLoading.value;
+            const matchesNotificationTypeFilter =
+                notificationTable.value.filters[0].value.length === 0 ||
+                notificationTable.value.filters[0].value.includes(ref.type);
+
+            if (!isExcludedType) {
                 database.addNotificationToDatabase(ref);
             }
-            if (watchState.isFriendsLoaded && notificationInitStatus.value) {
+            if (isNotificationInitReady) {
                 if (
                     ref.details?.worldId &&
                     !instanceStore.cachedInstances.has(ref.details.worldId)
@@ -222,14 +228,11 @@ export const useNotificationStore = defineStore('Notification', () => {
                         });
                     }
                 }
-                if (
-                    notificationTable.value.filters[0].value.length === 0 ||
-                    notificationTable.value.filters[0].value.includes(ref.type)
-                ) {
-                    uiStore.notifyMenu('notification');
-                }
                 queueNotificationNoty(ref);
                 sharedFeedStore.addEntry(ref);
+            }
+            if (matchesNotificationTypeFilter && !isExcludedType) {
+                uiStore.notifyMenu('notification');
             }
         }
         notificationTable.value.data.push(ref);
@@ -279,6 +282,12 @@ export const useNotificationStore = defineStore('Notification', () => {
      */
     function handlePipelineNotification(args) {
         const ref = args.json;
+        if (
+            ref.type === 'friendRequest' &&
+            generalSettingsStore.autoDeclineFriendRequests
+        ) {
+            handleAutoDeclineFriendRequest(ref);
+        }
         if (
             ref.type !== 'requestInvite' ||
             generalSettingsStore.autoAcceptInviteRequests === 'Off'
@@ -389,6 +398,27 @@ export const useNotificationStore = defineStore('Notification', () => {
                         console.error(err);
                     });
             });
+    }
+
+    async function handleAutoDeclineFriendRequest(ref) {
+        const joinInfo = await database.getJoinCount({
+            id: ref.senderUserId,
+            displayName: ref.senderUsername
+        });
+        if (Number(joinInfo.joinCount) !== 0) {
+            return;
+        }
+
+        const text = `Auto declined friend request from ${ref.senderUsername}`;
+        if (AppDebug.errorNoty) {
+            toast.dismiss(AppDebug.errorNoty);
+        }
+        AppDebug.errorNoty = toast.info(text);
+        console.log(text);
+        await notificationRequest.hideNotification({
+            notificationId: ref.id
+        });
+        handleNotificationHide(ref.id);
     }
 
     /**
@@ -623,10 +653,12 @@ export const useNotificationStore = defineStore('Notification', () => {
             return;
         }
 
-        if (
+        const isNotificationInitReady =
+            !notificationInitStatus.value || !isNotificationsLoading.value;
+        const matchesNotificationTypeFilter =
             notificationTable.value.filters[0].value.length === 0 ||
-            notificationTable.value.filters[0].value.includes(ref.type)
-        ) {
+            notificationTable.value.filters[0].value.includes(ref.type);
+        if (isNotificationInitReady && matchesNotificationTypeFilter) {
             uiStore.notifyMenu('notification');
         }
         database.addNotificationV2ToDatabase(ref);
