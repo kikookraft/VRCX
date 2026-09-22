@@ -1,7 +1,8 @@
 name: VRCX
 
 on:
-  - workflow_dispatch
+  workflow_dispatch:
+  workflow_call:
 
 concurrency:
   group: ${{ github.ref }}
@@ -325,3 +326,42 @@ jobs:
         with:
           name: VRCX-Zip
           path: 'VRCX_${{ needs.set_version.outputs.version }}.zip'
+
+      - name: Download Linux x64 AppImage
+        uses: actions/download-artifact@v8
+        with:
+          name: Electron-AppImage-x64
+          path: release_assets/
+      - name: Download Linux arm64 AppImage
+        uses: actions/download-artifact@v8
+        with:
+          name: Electron-AppImage-arm64
+          path: release_assets/
+      - name: Download macOS x64 DMG
+        uses: actions/download-artifact@v8
+        with:
+          name: Electron-MacDmg-x64
+          path: release_assets/
+      - name: Download macOS arm64 DMG
+        uses: actions/download-artifact@v8
+        with:
+          name: Electron-MacDmg-arm64
+          path: release_assets/
+      - name: Stage Release Files
+        run: |
+          mkdir -p release_assets
+          cp VRCX_${{ needs.set_version.outputs.version }}_Setup.exe release_assets/
+          cp VRCX_${{ needs.set_version.outputs.version }}.zip release_assets/
+          ls -la release_assets/
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ needs.set_version.outputs.version }}"
+          TAG="v${VERSION}"
+          TITLE="VRCX ${VERSION}"
+          echo "Publishing GitHub Release ${TAG} (${TITLE})..."
+          gh release create "${TAG}" release_assets/* \
+            --title "${TITLE}" \
+            --generate-notes \
+            --clobber
