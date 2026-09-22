@@ -361,7 +361,12 @@ jobs:
           TAG="v${VERSION}"
           TITLE="VRCX ${VERSION}"
           echo "Publishing GitHub Release ${TAG} (${TITLE})..."
-          gh release create "${TAG}" release_assets/* \
-            --title "${TITLE}" \
-            --generate-notes \
-            --clobber
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists. Uploading assets..."
+            gh release upload "${TAG}" release_assets/* --clobber
+          else
+            echo "Creating new release ${TAG}..."
+            gh release create "${TAG}" release_assets/* \
+              --title "${TITLE}" \
+              --generate-notes
+          fi
