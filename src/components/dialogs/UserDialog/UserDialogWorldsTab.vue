@@ -16,7 +16,11 @@
                 }}</span>
             </div>
             <div style="display: flex; align-items: center">
-                <Input v-model="searchQuery" class="h-8 mr-2 w-32" placeholder="Search worlds" @click.stop />
+                <Input
+                    v-model="searchQuery"
+                    class="h-8 mr-2 w-32"
+                    :placeholder="t('dialog.user.worlds.search_placeholder')"
+                    @click.stop />
             </div>
             <div style="display: flex; align-items: center">
                 <span class="mr-1">{{ t('dialog.user.worlds.sort_by') }}</span>
@@ -130,7 +134,6 @@
     );
 
     /**
-     *
      * @param userId
      */
     function setUserDialogWorlds(userId) {
@@ -143,9 +146,6 @@
         userDialog.value.worlds = worlds;
     }
 
-    /**
-     *
-     */
     function refreshUserDialogWorlds() {
         const D = userDialog.value;
         if (D.isWorldsLoading) {
@@ -204,7 +204,6 @@
     }
 
     /**
-     *
      * @param sortOrder
      */
     async function setUserDialogWorldSorting(sortOrder) {
@@ -223,7 +222,6 @@
     );
 
     /**
-     *
      * @param order
      */
     async function setUserDialogWorldOrder(order) {

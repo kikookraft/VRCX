@@ -27,7 +27,11 @@
                 }}</span>
             </div>
             <div class="flex items-center">
-                <Input v-model="avatarSearchQuery" class="h-8 w-40 mr-2" placeholder="Search avatars" @click.stop />
+                <Input
+                    v-model="avatarSearchQuery"
+                    class="h-8 w-40 mr-2"
+                    :placeholder="t('dialog.user.avatars.search_placeholder')"
+                    @click.stop />
                 <template v-if="userDialog.ref.id === currentUser.id">
                     <span class="mr-1">{{ t('dialog.user.avatars.sort_by') }}</span>
                     <Select
@@ -158,7 +162,6 @@
     );
 
     /**
-     *
      * @param userId
      */
     function setUserDialogAvatars(userId) {
@@ -175,7 +178,6 @@
     }
 
     /**
-     *
      * @param userId
      */
     async function setUserDialogAvatarsRemote(userId) {
@@ -203,7 +205,6 @@
     }
 
     /**
-     *
      * @param sortOption
      */
     function changeUserDialogAvatarSorting(sortOption) {

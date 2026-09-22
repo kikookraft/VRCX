@@ -8,7 +8,7 @@
                 :model-value="friendExportFavoriteGroupSelection"
                 @update:modelValue="handleFriendExportGroupSelect">
                 <SelectTrigger size="sm">
-                    <SelectValue placeholder="All Favorites" />
+                    <SelectValue :placeholder="t('dialog.friend_export.all_favorites')" />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectGroup>
@@ -28,7 +28,7 @@
                 :model-value="friendExportLocalFavoriteGroupSelection"
                 @update:modelValue="handleFriendExportLocalGroupSelect">
                 <SelectTrigger size="sm">
-                    <SelectValue placeholder="Select Group" />
+                    <SelectValue :placeholder="t('dialog.friend_export.select_group')" />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectGroup>
@@ -111,9 +111,6 @@
         }
     );
 
-    /**
-     *
-     */
     function showFriendExportDialog() {
         friendExportFavoriteGroup.value = null;
         friendExportFavoriteGroupSelection.value = FRIEND_EXPORT_ALL_VALUE;
@@ -121,7 +118,6 @@
     }
 
     /**
-     *
      * @param value
      */
     function handleFriendExportGroupSelect(value) {
@@ -135,7 +131,6 @@
     }
 
     /**
-     *
      * @param value
      */
     function handleFriendExportLocalGroupSelect(value) {
@@ -148,7 +143,6 @@
     }
 
     /**
-     *
      * @param event
      */
     function handleCopyFriendExportData(event) {
@@ -166,9 +160,6 @@
             });
     }
 
-    /**
-     *
-     */
     function updateFriendExportDialog() {
         const lines = ['UserID,Name'];
 
@@ -210,7 +201,6 @@
     }
 
     /**
-     *
      * @param group
      */
     function selectFriendExportGroup(group) {
@@ -222,7 +212,6 @@
     }
 
     /**
-     *
      * @param groupName
      */
     function selectFriendExportLocalGroup(groupName) {

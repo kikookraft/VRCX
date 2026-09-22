@@ -20,7 +20,11 @@
             </div>
             <div style="display: flex; align-items: center">
                 <template v-if="!userDialogGroupEditMode">
-                    <Input v-model="groupSearchQuery" class="h-8 w-40 mr-2" placeholder="Search groups" @click.stop />
+                    <Input
+                        v-model="groupSearchQuery"
+                        class="h-8 w-40 mr-2"
+                        :placeholder="t('dialog.user.groups.search_placeholder')"
+                        @click.stop />
                     <span style="margin-right: 6px">{{ t('dialog.user.groups.sort_by') }}</span>
                     <Select
                         :model-value="userDialogGroupSortingKey"
@@ -473,7 +477,6 @@
     );
 
     /**
-     *
      * @param sortOrder
      */
     async function setUserDialogGroupSorting(sortOrder) {
@@ -486,7 +489,6 @@
     }
 
     /**
-     *
      * @param userId
      */
     async function getUserGroups(userId) {
@@ -550,7 +552,6 @@
     }
 
     /**
-     *
      * @param a
      * @param b
      */
@@ -569,9 +570,6 @@
         return aIndex - bIndex;
     }
 
-    /**
-     *
-     */
     async function sortCurrentUserGroups() {
         const D = userDialog.value;
         let sortMethod = () => 0;
@@ -594,9 +592,6 @@
         userDialog.value.userGroups.remainingGroups.sort(sortMethod);
     }
 
-    /**
-     *
-     */
     async function exitEditModeCurrentUserGroups() {
         userDialogGroupEditMode.value = false;
         userDialogGroupEditGroups.value = [];
@@ -605,9 +600,6 @@
         await sortCurrentUserGroups();
     }
 
-    /**
-     *
-     */
     async function editModeCurrentUserGroups() {
         await updateInGameGroupOrder();
         userDialogGroupEditGroups.value = Array.from(currentUserGroups.value.values());
@@ -619,9 +611,6 @@
         userDialogGroupEditMode.value = true;
     }
 
-    /**
-     *
-     */
     async function saveInGameGroupOrder() {
         userDialogGroupEditGroups.value.sort(sortGroupsByInGame);
         try {
@@ -637,9 +626,6 @@
     }
 
     // Select all groups currently in the editable list by collecting their IDs
-    /**
-     *
-     */
     function selectAllGroups() {
         const allSelected = userDialogGroupEditSelectedGroupIds.value.length === userDialogGroupEditGroups.value.length;
 
@@ -657,7 +643,6 @@
     const bulkGroupActionValue = ref('');
 
     /**
-     *
      * @param value
      */
     function handleBulkGroupAction(value) {
@@ -677,7 +662,6 @@
 
     // Apply the given visibility to all selected groups
     /**
-     *
      * @param newVisibility
      */
     async function bulkSetVisibility(newVisibility) {
@@ -687,9 +671,6 @@
     }
 
     // Leave (remove user from) all selected groups
-    /**
-     *
-     */
     function bulkLeaveGroups() {
         for (const groupId of userDialogGroupEditSelectedGroupIds.value) {
             leaveGroup(groupId);
@@ -698,7 +679,6 @@
 
     // Toggle individual group selection for bulk actions
     /**
-     *
      * @param groupId
      */
     function toggleGroupSelection(groupId) {
@@ -711,7 +691,6 @@
     }
 
     /**
-     *
      * @param groupId
      */
     function moveGroupUp(groupId) {
@@ -722,7 +701,6 @@
     }
 
     /**
-     *
      * @param groupId
      */
     function moveGroupDown(groupId) {
@@ -733,7 +711,6 @@
     }
 
     /**
-     *
      * @param groupId
      */
     function moveGroupTop(groupId) {
@@ -743,7 +720,6 @@
     }
 
     /**
-     *
      * @param groupId
      */
     function moveGroupBottom(groupId) {

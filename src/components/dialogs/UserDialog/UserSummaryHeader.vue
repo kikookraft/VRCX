@@ -62,10 +62,8 @@
                     <img
                         v-else
                         class="w-full h-full object-cover cursor-pointer"
-                        :src="userImage(userDialog.ref, true, '256', true)"
-                        @click.stop="
-                            showFullscreenImageDialog(userDialog.ref.userIcon || userDialog.ref.currentAvatarImageUrl)
-                        "
+                        :src="userDialog.publicProfileRef?.iconUrl"
+                        @click.stop="showFullscreenImageDialog(userDialog.publicProfileRef?.iconUrl)"
                         @error="userIconError = true"
                         loading="lazy" />
                 </div>
@@ -266,8 +264,10 @@
                 </Badge>
             </div>
 
-            <div v-if="userDialog.ref.badges && userDialog.ref.badges.length" class="flex flex-wrap gap-1.5">
-                <TooltipWrapper v-for="badge in userDialog.ref.badges" :key="badge.badgeId" side="top">
+            <div
+                v-if="userDialog.publicProfileRef?.badges && userDialog.publicProfileRef?.badges.length"
+                class="flex flex-wrap gap-1.5">
+                <TooltipWrapper v-for="badge in userDialog.publicProfileRef?.badges" :key="badge.badgeId" side="top">
                     <template #content>
                         <span>{{ badge.badgeName }}</span>
                         <span v-if="badge.hidden">&nbsp;(Hidden)</span>
@@ -377,39 +377,30 @@
         <div
             class="text-[10px] font-bold uppercase tracking-wide mb-2 pb-2 border-b border-muted-foreground/20"
             :style="{ color: userDialog.theme.subtextColor }">
-            {{
-                userDialog.id !== currentUser.id &&
-                userDialog.ref.profilePicOverride &&
-                userDialog.ref.currentAvatarImageUrl
-                    ? t('dialog.user.info.avatar_info_last_seen')
-                    : t('dialog.user.info.avatar_info')
-            }}
+            {{ t('dialog.user.info.avatar_info') }}
             <span class="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                <TooltipWrapper
-                    v-if="userDialog.ref.profilePicOverride && !userDialog.ref.currentAvatarImageUrl"
-                    side="top"
-                    :content="t('dialog.user.info.vrcplus_hides_avatar')">
+                <TooltipWrapper v-if="!hasAvatarSet" side="right" :content="t('dialog.user.info.icon_hides_avatar')">
                     <Info class="inline-block h-3 w-3 align-middle" :style="{ color: userDialog.theme.iconColor }" />
                 </TooltipWrapper>
             </span>
         </div>
         <div class="text-xs flex justify-between gap-2">
-            <AvatarInfo
-                :key="userDialog.id"
-                :imageurl="userDialog.ref.currentAvatarImageUrl"
-                :userid="userDialog.id"
-                :avatartags="userDialog.ref.currentAvatarTags"
-                style="display: inline-block" />
-            <img
-                v-if="userDialog.ref.currentAvatarThumbnailImageUrl"
-                class="h-12 w-16 rounded-lg object-cover cursor-pointer flex-none"
-                :src="userDialog.ref.currentAvatarThumbnailImageUrl"
-                @click="
-                    showFullscreenImageDialog(
-                        userDialog.ref.currentAvatarImageUrl || userDialog.ref.currentAvatarThumbnailImageUrl
-                    )
-                "
-                loading="lazy" />
+            <template v-if="avatarImageUrl">
+                <AvatarInfo
+                    :key="avatarImageUrl"
+                    :imageurl="avatarImageUrl"
+                    :userid="userDialog.id"
+                    :avatartags="userDialog.ref.currentAvatarTags"
+                    style="display: inline-block" />
+                <img
+                    class="h-12 w-16 rounded-lg object-cover cursor-pointer flex-none"
+                    :src="avatarImageUrl"
+                    @click="showFullscreenImageDialog(avatarImageUrl)"
+                    loading="lazy" />
+            </template>
+            <template v-else>
+                <div class="text-xs text-muted-foreground">—</div>
+            </template>
         </div>
     </div>
 
@@ -480,7 +471,7 @@
         MessageCircle,
         User
     } from 'lucide-vue-next';
-    import { ref, watch } from 'vue';
+    import { computed, ref, watch } from 'vue';
     import { storeToRefs } from 'pinia';
     import { useI18n } from 'vue-i18n';
 
@@ -497,6 +488,7 @@
 
     import UserActionDropdown from './UserActionDropdown.vue';
     import { showGroupDialog } from '@/coordinators/groupCoordinator';
+    import { getAvatarName } from '@/coordinators/avatarCoordinator';
 
     const props = defineProps({
         getUserStateText: {
@@ -528,11 +520,32 @@
         useUserStore();
 
     const { showFullscreenImageDialog } = useGalleryStore();
-    const { userImage, userStatusClass } = useUserDisplay();
+    const { userStatusClass } = useUserDisplay();
     const { showEditProfileDialog } = useUserStore();
 
     const profileImageError = ref(false);
     const userIconError = ref(false);
+    const hasAvatarSet = ref(false);
+    const avatarImageUrl = computed(() => {
+        if (userDialog.value.id === currentUser.value.id) {
+            return currentUser.value.currentAvatarImageUrl;
+        }
+
+        return hasAvatarSet.value ? userDialog.value.publicProfileRef?.iconUrl : '';
+    });
+
+    watch(
+        () => userDialog.value.publicProfileRef?.iconUrl,
+        async (iconUrl) => {
+            hasAvatarSet.value = false;
+            // check if image is from an avatar
+            const avatarInfo = await getAvatarName(iconUrl);
+            if (iconUrl === userDialog.value.publicProfileRef?.iconUrl) {
+                hasAvatarSet.value = Boolean(avatarInfo.ownerId);
+            }
+        },
+        { immediate: true }
+    );
 
     watch(
         () => userDialog.value.id,
