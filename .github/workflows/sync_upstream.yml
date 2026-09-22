@@ -1,0 +1,103 @@
+name: Sync Upstream & Release
+
+on:
+  schedule:
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  sync_and_check:
+    name: Sync with Upstream & Check Version
+    runs-on: ubuntu-latest
+    outputs:
+      should_build: ${{ steps.check_release.outputs.should_build }}
+      version: ${{ steps.check_release.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: master
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch upstream
+        run: |
+          git remote add upstream https://github.com/vrcx-team/VRCX.git || git remote set-url upstream https://github.com/vrcx-team/VRCX.git
+          git fetch upstream master --tags
+
+      - name: Check for upstream changes
+        id: check_upstream
+        run: |
+          OLD_VERSION="$(cat Version)"
+          echo "old_version=${OLD_VERSION}" >> $GITHUB_OUTPUT
+
+          if git merge-base --is-ancestor upstream/master HEAD; then
+            echo "has_new_commits=false" >> $GITHUB_OUTPUT
+            echo "Fork is already up-to-date with upstream/master."
+          else
+            echo "has_new_commits=true" >> $GITHUB_OUTPUT
+            echo "New commits found in upstream/master."
+          fi
+
+      - name: Rebase onto upstream/master
+        if: steps.check_upstream.outputs.has_new_commits == 'true'
+        run: |
+          echo "Rebasing fork commits onto upstream/master..."
+          if ! git rebase upstream/master; then
+            echo "::error::Rebase failed due to merge conflicts! Please resolve conflicts manually."
+            git rebase --abort
+            exit 1
+          fi
+
+          echo "Pushing rebased master branch to origin..."
+          git push origin master --force-with-lease
+          git push origin --tags || true
+
+      - name: Check if release build is needed
+        id: check_release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="$(cat Version)"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Current Version: ${VERSION}"
+
+          # Check if GitHub Release for v${VERSION} exists in this repository
+          if gh release view "v${VERSION}" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            echo "Release v${VERSION} already exists on ${{ github.repository }}."
+            RELEASE_EXISTS="true"
+          else
+            echo "Release v${VERSION} does not exist on ${{ github.repository }}."
+            RELEASE_EXISTS="false"
+          fi
+
+          if [ "${RELEASE_EXISTS}" = "false" ]; then
+            echo "Release v${VERSION} is missing. Triggering build."
+            echo "should_build=true" >> $GITHUB_OUTPUT
+          elif [ "${{ steps.check_upstream.outputs.has_new_commits }}" = "true" ] && [ "${VERSION}" != "${{ steps.check_upstream.outputs.old_version }}" ]; then
+            echo "Version bumped from ${{ steps.check_upstream.outputs.old_version }} to ${VERSION}. Triggering build."
+            echo "should_build=true" >> $GITHUB_OUTPUT
+          else
+            echo "No new release build needed."
+            echo "should_build=false" >> $GITHUB_OUTPUT
+          fi
+
+  trigger_build_and_release:
+    name: Build & Release
+    needs: sync_and_check
+    if: needs.sync_and_check.outputs.should_build == 'true'
+    uses: ./.github/workflows/github_actions.yml
+    secrets: inherit
