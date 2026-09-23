@@ -10,7 +10,7 @@ if ! git remote get-url upstream >/dev/null 2>&1; then
 fi
 
 echo "Fetching latest changes and tags from upstream..."
-git fetch upstream master --tags
+git fetch upstream master --tags --force
 
 OLD_VERSION=$(cat Version 2>/dev/null || echo "unknown")
 
