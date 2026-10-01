@@ -1,11 +1,17 @@
 <div align="center">
 
-# <img src="https://raw.githubusercontent.com/vrcx-team/VRCX/master/images/VRCX.ico" width="64" height="64"> </img> VRCX
+# <img src="https://raw.githubusercontent.com/kikookraft/VRCX/master/images/VRCX.ico" width="64" height="64"> </img> VRCX
 
-[![GitHub release](https://img.shields.io/github/release/vrcx-team/VRCX.svg)](https://github.com/vrcx-team/VRCX/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/vrcx-team/VRCX/total?color=6451f1)](https://github.com/vrcx-team/VRCX/releases/latest)
-[![GitHub Workflow Status](https://github.com/vrcx-team/VRCX/actions/workflows/github_actions.yml/badge.svg)](https://github.com/vrcx-team/VRCX/actions/workflows/github_actions.yml)
+[![GitHub release](https://img.shields.io/github/release/kikookraft/VRCX.svg)](https://github.com/kikookraft/VRCX/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/kikookraft/VRCX/total?color=6451f1)](https://github.com/kikookraft/VRCX/releases/latest)
+[![GitHub Workflow Status](https://github.com/kikookraft/VRCX/actions/workflows/github_actions.yml/badge.svg)](https://github.com/kikookraft/VRCX/actions/workflows/github_actions.yml)
 [![VRCX Discord Invite](https://img.shields.io/discord/854071236363550763?color=%237289DA&logo=discord&logoColor=white&label=discord)](https://vrcx.app/discord)
+
+
+## Litle Note about this fork
+I have made this fork to remove the restriction about local favorites worlds and avatars
+It origginaly required VRC+ wich is not really meaningfull for local usage  
+So now we can have a lot more favorites without restriction
 
 | **English** | [Français](./README/README.fr.md) | [日本語](./README/README.jp.md) | [简体中文](./README/README.zh_CN.md) | [Italiano](./README/README.it.md) | [Русский](./README/README.ru_RU.md) | [Español](./README/README.es.md) | [Polski](./README/README.pl.md) | [ภาษาไทย](./README/README.th.md) | [Magyar](./README/README.hu.md)
 
@@ -15,7 +21,7 @@ VRCX is an assistant/companion application for VRChat that provides information 
 
 <div align="center">
 
-Download and install the latest installer (`VRCX_Setup.exe`) from [here](https://github.com/vrcx-team/VRCX/releases/latest).
+Download and install the latest installer (`VRCX_Setup.exe`) from [here](https://github.com/kikookraft/VRCX/releases/latest).
 
 For macOS and Linux check [here](https://github.com/vrcx-team/VRCX/wiki/Running-VRCX-on-Linux) for more info.
 
