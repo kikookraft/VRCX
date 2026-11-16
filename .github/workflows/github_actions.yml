@@ -351,7 +351,7 @@ jobs:
       - name: Stage Release Files
         run: |
           mkdir -p release_assets
-          cp VRCX_${{ needs.set_version.outputs.version }}_Setup.exe release_assets/
+          cp VRCX_${{ needs.set_version.outputs.version }}_Setup_x64.exe release_assets/
           cp VRCX_${{ needs.set_version.outputs.version }}.zip release_assets/
           ls -la release_assets/
       - name: Publish GitHub Release
